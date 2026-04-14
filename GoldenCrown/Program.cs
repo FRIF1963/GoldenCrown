@@ -28,7 +28,7 @@ namespace GoldenCrown
 
             app.MapControllers();
 
-            app.Run(); //GitHub test
+            app.Run();
         }
     }
 }
