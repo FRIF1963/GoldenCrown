@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public int SenderId { get; set; }
+        public int SenderAccountId { get; set; }
 
-        public int ReceiverId { get; set; }
+        public int ReceiverAccountId { get; set; }
 
         public DateTime CreateAt { get; set; }
 
