@@ -1,5 +1,6 @@
 ﻿using GoldenCrown.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GoldenCrown.Database
 {
@@ -17,7 +18,7 @@ namespace GoldenCrown.Database
             var userentity = modelBuilder.Entity<User>()
                 .ToTable("users"); //Название таблицы
             userentity.HasKey(u => u.Id); //Первичный ключ
-            userentity.Property(u => u.Id) 
+            userentity.Property(u => u.Id)
                 .HasColumnName("id") //Название колонки
                 .UseIdentityColumn();//AutoIncrement
             userentity.Property(u => u.Login)
@@ -29,11 +30,8 @@ namespace GoldenCrown.Database
             userentity.Property(u => u.Password)
                 .HasColumnName("password")
                 .IsRequired();
-            userentity.HasData(
-                new User { Id = 1, Name = "Kostya", Login = "Kostya", Password = "123" },
-                new User { Id = 2, Name = "Mark", Login = "Mark", Password = "1234" },
-                new User { Id = 3, Name = "Tom", Login = "Tom", Password = "1235" }
-                );
+
+            SeedUserData(userentity);
 
 
             var accountentity = modelBuilder.Entity<Account>()
@@ -99,5 +97,15 @@ namespace GoldenCrown.Database
                 .OnDelete(DeleteBehavior.NoAction);
 
         }
+
+        private void SeedUserData(EntityTypeBuilder<User> userentity)
+        {
+            userentity.HasData(
+                new User { Id = 1, Name = "Kostya", Login = "Kostya", Password = "123" },
+                new User { Id = 2, Name = "Mark", Login = "Mark", Password = "1234" },
+                new User { Id = 3, Name = "Tom", Login = "Tom", Password = "1235" }
+                );
+        }
+
     }
 }
