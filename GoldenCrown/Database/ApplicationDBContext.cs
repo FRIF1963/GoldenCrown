@@ -63,6 +63,34 @@ namespace GoldenCrown.Database
                 .WithOne()
                 .HasForeignKey<Session>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            var transactionentity = modelBuilder.Entity<Transaction>()
+                .ToTable("transaction");
+            transactionentity.HasKey(t => t.Id);
+            transactionentity.Property(t => t.Id)
+                .HasColumnName("session_id")
+                .UseIdentityColumn();
+            transactionentity.Property(t => t.Amoutn)
+                .HasColumnName("amoutn")
+                .IsRequired();
+            transactionentity.Property(t => t.CreateAt)
+                .HasColumnName("create_at")
+                .IsRequired();
+            transactionentity.Property(t => t.SenderAccountId)
+                .HasColumnName("sender_account_id")
+                .IsRequired();
+            transactionentity.Property(t => t.ReceiverAccountId)
+                .HasColumnName("reciever_account_id")
+                .IsRequired();
+            transactionentity.HasOne<Account>()
+                .WithMany()
+                .HasForeignKey(t => t.SenderAccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+            transactionentity.HasOne<Account>()
+                .WithMany()
+                .HasForeignKey(t => t.ReceiverAccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
