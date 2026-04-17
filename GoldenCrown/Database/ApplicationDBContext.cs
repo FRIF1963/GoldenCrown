@@ -38,6 +38,7 @@ namespace GoldenCrown.Database
                 .UseIdentityColumn();
             accountentity.Property(a => a.Balance)
                 .HasColumnName("balance")
+                .HasPrecision(19, 4)
                 .IsRequired();
             accountentity.Property(a => a.UserId)
                 .HasColumnName("user_id")
@@ -45,14 +46,14 @@ namespace GoldenCrown.Database
             accountentity.HasOne<User>() //Связь 1 к 1
                 .WithOne()
                 .HasForeignKey<Account>(a => a.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Каскадное удаление (удаление зависимой сущности после удаления главной)
+                .OnDelete(DeleteBehavior.NoAction);
 
             var sessionentity = modelBuilder.Entity<Session>()
                 .ToTable("session");
             sessionentity.HasKey(s => s.UserId);
             sessionentity.Property(s => s.UserId)
                 .HasColumnName("user_Id")
-                .UseIdentityColumn();
+                .IsRequired();
             sessionentity.Property(s => s.Token)
                 .HasColumnName("token")
                 .IsRequired();
@@ -61,8 +62,7 @@ namespace GoldenCrown.Database
                 .IsRequired();
             sessionentity.HasOne<User>()
                 .WithOne()
-                .HasForeignKey<Session>(s => s.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey<Session>(s => s.UserId);
 
             var transactionentity = modelBuilder.Entity<Transaction>()
                 .ToTable("transaction");
@@ -72,6 +72,7 @@ namespace GoldenCrown.Database
                 .UseIdentityColumn();
             transactionentity.Property(t => t.Amoutn)
                 .HasColumnName("amoutn")
+                .HasPrecision(19, 4)
                 .IsRequired();
             transactionentity.Property(t => t.CreateAt)
                 .HasColumnName("create_at")
@@ -85,17 +86,13 @@ namespace GoldenCrown.Database
             transactionentity.HasOne<Account>()
                 .WithMany()
                 .HasForeignKey(t => t.SenderAccountId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
             transactionentity.HasOne<Account>()
                 .WithMany()
                 .HasForeignKey(t => t.ReceiverAccountId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("");
-        }
     }
 }
