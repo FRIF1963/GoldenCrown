@@ -29,6 +29,12 @@ namespace GoldenCrown.Database
             userentity.Property(u => u.Password)
                 .HasColumnName("password")
                 .IsRequired();
+            userentity.HasData(
+                new User { Id = 1, Name = "Kostya", Login = "Kostya", Password = "123" },
+                new User { Id = 2, Name = "Mark", Login = "Mark", Password = "1234" },
+                new User { Id = 3, Name = "Tom", Login = "Tom", Password = "1235" }
+                );
+
 
             var accountentity = modelBuilder.Entity<Account>()
                 .ToTable("account");
@@ -93,6 +99,5 @@ namespace GoldenCrown.Database
                 .OnDelete(DeleteBehavior.NoAction);
 
         }
-
     }
 }
