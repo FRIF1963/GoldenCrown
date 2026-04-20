@@ -1,5 +1,6 @@
 
 using GoldenCrown.Database;
+using GoldenCrown.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GoldenCrown
@@ -17,10 +18,14 @@ namespace GoldenCrown
             builder.Services.AddDbContext<ApplicationDBContext>(options => 
                 options.UseSqlServer(connectionString));
 
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+
 
             var app = builder.Build();
 
