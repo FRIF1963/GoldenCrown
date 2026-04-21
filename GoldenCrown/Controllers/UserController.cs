@@ -20,9 +20,17 @@ namespace GoldenCrown.Controllers
         [HttpPost("register")] // Post localhost:7777/api/user/request
         public async Task<IActionResult> Register([FromBody] DTOs.RegisterRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _userService.RegisterAsync(request.login, request.name, request.password);
+
             if (result) return Ok();
-            return BadRequest(new {Message = "User registration failed"});
+
+            return BadRequest(new { Message = "User registration failed" });
+            
         }
     }
 }
