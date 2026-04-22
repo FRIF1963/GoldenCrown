@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 
-namespace GoldenCrown.Models
+namespace GoldenCrown.Database.Models
 {
     public class User
     {

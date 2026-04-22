@@ -1,4 +1,4 @@
-﻿using GoldenCrown.Models;
+﻿using GoldenCrown.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -106,6 +106,5 @@ namespace GoldenCrown.Database
                 new User { Id = 3, Name = "Tom", Login = "Tom", Password = "1235" }
                 );
         }
-
     }
 }

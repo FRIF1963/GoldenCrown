@@ -1,4 +1,4 @@
-﻿namespace GoldenCrown.Models
+﻿namespace GoldenCrown.Database.Models
 {
     public class Session
     {
