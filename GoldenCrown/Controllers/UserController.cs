@@ -32,5 +32,21 @@ namespace GoldenCrown.Controllers
             return BadRequest(new { Message = "User registration failed" });
             
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] DTOs.LoginRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _userService.LoginAsync(request.login, request.password);
+
+            if(result != null) return Ok(result);
+
+            return Unauthorized();
+
+        }
     }
 }

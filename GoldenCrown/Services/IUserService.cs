@@ -72,8 +72,11 @@ namespace GoldenCrown.Services
 
 
             //Сохранить сессию в базу данных(убедиться, что она единственная для пользователя)
-            var chekSession = await _context.Sessions.FirstOrDefaultAsync(s => s.UserId == user.Id && s.ExpiresAt > DateTime.UtcNow);
-            if (chekSession != null) throw new InvalidOperationException($"User have an unfinished session");
+            var exestingSession = await _context.Sessions.FirstOrDefaultAsync(s => s.UserId == user.Id);
+            if (exestingSession != null)
+            {
+                _context.Sessions.Remove(exestingSession);
+            }
 
             //Сохранить в базу данных
             _context.Sessions.Add(session);
