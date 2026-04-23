@@ -36,5 +36,24 @@ namespace GoldenCrown.Controllers
 
             return BadRequest(new {Message = balanceresult.ErrorMessage});
         }
+
+        [HttpPost("transfer")]
+
+        public async Task<IActionResult> TransferAsync([FromBody] DTOs.Finance.TransferRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var transferresult = await _financeSevice.Transfer(request.Token, request.ReceiverLogin, request.Amount);
+
+            if (transferresult.IsSuccess)
+            {
+                return Ok();
+            }
+
+            return BadRequest(new { Message = transferresult.ErrorMessage });
+        }
     }
 }

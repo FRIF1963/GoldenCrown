@@ -1,5 +1,6 @@
 ﻿using GoldenCrown.Database;
 using Microsoft.EntityFrameworkCore;
+using GoldenCrown.Database.Models;
 
 namespace GoldenCrown.Services
 {
@@ -29,6 +30,64 @@ namespace GoldenCrown.Services
             }
 
             return Result<decimal>.Success(account!.Balance);
+        }
+
+        public async Task<Result> Transfer(string token, string receiverLogin, decimal amount)
+        {
+            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
+
+            if (session == null)
+            {
+                return Result.Failure("Session expired");
+            }
+
+            var receiverUser = await _context.Users.FirstOrDefaultAsync(u => u.Login == receiverLogin);
+
+            if (receiverUser == null)
+            {
+                return Result.Failure($"{receiverLogin} Not Found");
+            }
+
+            var senderAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+
+            if (senderAccount == null)
+            {
+                return Result.Failure($"Not Found");
+            }
+
+            var receiverAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == receiverUser.Id);
+
+            if (receiverAccount == null)
+            {
+                return Result.Failure($"Not Found");
+            }
+
+            if (senderAccount.Balance < amount)
+            {
+                return Result.Failure($"Your balance is less than {amount}");
+            }
+            else if (senderAccount.Balance <= 0)
+            {
+                return Result.Failure("Your balance must be greater than 0");
+            }
+
+            senderAccount.Balance -= amount;
+
+            receiverAccount.Balance += amount;
+
+
+            var transaction = new Transaction
+            {
+                SenderAccountId = senderAccount.Id,
+                ReceiverAccountId = receiverAccount.Id,
+                CreateAt = DateTime.UtcNow,
+                Amoutn = amount
+            };
+
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+
+            return Result.Success();
         }
     }
 }
