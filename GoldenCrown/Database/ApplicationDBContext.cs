@@ -72,7 +72,7 @@ namespace GoldenCrown.Database
                 .ToTable("transaction");
             transactionentity.HasKey(t => t.Id);
             transactionentity.Property(t => t.Id)
-                .HasColumnName("session_id")
+                .HasColumnName("id")
                 .UseIdentityColumn();
             transactionentity.Property(t => t.Amoutn)
                 .HasColumnName("amoutn")

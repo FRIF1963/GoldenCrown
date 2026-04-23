@@ -1,16 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace GoldenCrown.DTOs.Finance
 {
     public class TransferRequest
     {
+        [FromQuery]
         [Required]
         public string Token {  get; set; }
 
         [Required]
         public string ReceiverLogin { get; set; }
 
-        [Required]
+        [Range(0.01, double.MaxValue,ErrorMessage = "Amount must be greater than 0")]
         public decimal Amount { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace GoldenCrown.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login && u.Password == password);
             if (user == null)
             {
-                Result<bool>.Failure($"Incorrect password or login"); 
+                return Result<string>.Failure($"Incorrect password or login"); 
             }
 
             var session = new Session

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GoldenCrown.DTOs.Finance;
+using GoldenCrown.Database.Models;
 
 
 namespace GoldenCrown.Controllers
@@ -24,7 +25,7 @@ namespace GoldenCrown.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var balanceresult = await _financeSevice.GetBalance(token);
+            var balanceresult = await _financeSevice.GetBalanceAsync(token);
 
             if (balanceresult.IsSuccess)
             {
@@ -38,7 +39,6 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("transfer")]
-
         public async Task<IActionResult> TransferAsync([FromBody] DTOs.Finance.TransferRequest request)
         {
             if (!ModelState.IsValid)
@@ -46,7 +46,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(ModelState);
             }
 
-            var transferresult = await _financeSevice.Transfer(request.Token, request.ReceiverLogin, request.Amount);
+            var transferresult = await _financeSevice.TransferAsync(request.Token, request.ReceiverLogin, request.Amount);
 
             if (transferresult.IsSuccess)
             {
@@ -54,6 +54,46 @@ namespace GoldenCrown.Controllers
             }
 
             return BadRequest(new { Message = transferresult.ErrorMessage });
+        }
+
+        [HttpPost("Deposit")]
+        public async Task<IActionResult> Deposit([FromBody] DTOs.Finance.DepositRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var depositResult = await _financeSevice.DepositAsync(request.token, request.amount);
+            
+            if(depositResult.IsSuccess)
+            {
+                return Ok();
+            }
+
+            return BadRequest(new { Message = depositResult.ErrorMessage });
+        }
+
+        [HttpGet("History")]
+        public async Task<IActionResult> GetHistoryAsync(
+            [FromHeader] string token,
+            [FromHeader] DateTime from,
+            [FromHeader] DateTime to,
+            [FromHeader] int ofset,
+            [FromHeader] int limit)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var historyTransactionResult = await _financeSevice.GetHistoryAsync(token, from, to, ofset, limit);
+
+            if(historyTransactionResult.IsSuccess)
+            {
+                return Ok(historyTransactionResult);
+            }
+
+            return BadRequest(new {Message =  historyTransactionResult.ErrorMessage});
         }
     }
 }

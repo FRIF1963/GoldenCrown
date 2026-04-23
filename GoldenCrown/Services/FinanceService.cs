@@ -13,7 +13,7 @@ namespace GoldenCrown.Services
             _context = context;
         }
 
-        public async Task<Result<decimal>> GetBalance(string token)
+        public async Task<Result<decimal>> GetBalanceAsync(string token)
         {
             var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
 
@@ -32,7 +32,39 @@ namespace GoldenCrown.Services
             return Result<decimal>.Success(account!.Balance);
         }
 
-        public async Task<Result> Transfer(string token, string receiverLogin, decimal amount)
+        public async Task<Result> DepositAsync(string token, decimal amount)
+        {
+            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
+
+            if (session == null)
+            {
+                return Result.Failure("Session expired");
+            }
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+
+            if (account == null)
+            {
+                return Result.Failure($"Not Found");
+            }
+
+            account.Balance += amount;
+
+            var transaction = new Transaction
+            {
+                SenderAccountId = account.Id,
+                ReceiverAccountId = account.Id,
+                CreateAt = DateTime.UtcNow,
+                Amoutn = amount
+            };
+
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+
+            return Result.Success();
+        }
+
+        public async Task<Result> TransferAsync(string token, string receiverLogin, decimal amount)
         {
             var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
 
@@ -88,6 +120,38 @@ namespace GoldenCrown.Services
             await _context.SaveChangesAsync();
 
             return Result.Success();
+        }
+
+        public async Task<Result<List<Transaction>>> GetHistoryAsync(string token, DateTime from, DateTime to, int ofset, int limit)
+        {
+            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
+
+            if (session == null)
+            {
+                return Result<List<Transaction>>.Failure("Session expired");
+            }
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+
+            if (account == null)
+            {
+                return Result<List<Transaction>>.Failure($"Not Found");
+            }
+
+            var transactions = await _context.Transactions
+                .Where(t =>  (t.SenderAccountId == account.Id ||t.ReceiverAccountId == account.Id)
+                && t.CreateAt >= from && t.CreateAt <= to)
+                .Skip(ofset)
+                .Take(limit)
+                .ToListAsync();
+
+            if(transactions == null)
+            {
+                return Result<List<Transaction>>.Failure("Not Find Transactions");
+            }
+
+            return Result<List<Transaction>>.Success(transactions);
+
         }
     }
 }
