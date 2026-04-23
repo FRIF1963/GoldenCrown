@@ -1,5 +1,4 @@
-﻿using GoldenCrown.DTOs;
-using GoldenCrown.Services;
+﻿using GoldenCrown.Services;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,14 +17,14 @@ namespace GoldenCrown.Controllers
 
 
         [HttpPost("register")] // Post localhost:7777/api/user/request
-        public async Task<IActionResult> Register([FromBody] DTOs.RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] DTOs.User.RegisterRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _userService.RegisterAsync(request.login, request.name, request.password);
+            var result = await _userService.RegisterAsync(request.Login, request.Name, request.Password);
 
             if (result) return Ok();
 
@@ -34,16 +33,16 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] DTOs.LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] DTOs.User.LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _userService.LoginAsync(request.login, request.password);
+            var result = await _userService.LoginAsync(request.Login, request.Password);
 
-            if(result != null) return Ok(result);
+            if(result) return Ok(result);
 
             return Unauthorized();
 

@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GoldenCrown.DTOs
+namespace GoldenCrown.DTOs.User
 {
     public class LoginRequest
     {
         [Required(ErrorMessage = "Please enter your login")]
-        public string login { get; set; }
+        public string Login { get; set; }
 
         [Required(ErrorMessage = "Please enter your password")]
-        public string password { get; set; }
+        public string Password { get; set; }
     }
 }

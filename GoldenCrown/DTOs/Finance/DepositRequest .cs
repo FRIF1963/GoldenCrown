@@ -1,4 +1,4 @@
-﻿namespace GoldenCrown.DTOs
+﻿namespace GoldenCrown.DTOs.Finance
 {
     public class DepositRequest
     {

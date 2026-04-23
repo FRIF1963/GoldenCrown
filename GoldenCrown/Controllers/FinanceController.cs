@@ -1,6 +1,8 @@
 ﻿using GoldenCrown.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using GoldenCrown.DTOs.Finance;
+
 
 namespace GoldenCrown.Controllers
 {
@@ -15,17 +17,24 @@ namespace GoldenCrown.Controllers
             _financeSevice = financeSevice;
         }
 
-        [HttpGet("balance")] // Register([FromBody] DTOs.RegisterRequest request
-        public async Task<IActionResult> Balance([FromHeader(Name = "Token")] string token)
+        [HttpGet("balance")]
+        public async Task<IActionResult> GetBalanceAsync([FromHeader(Name = "Token")] string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _financeSevice.GetBalance(token);
-            if (result != null) return Ok(result);
+            var balanceresult = await _financeSevice.GetBalance(token);
 
-            return BadRequest(ModelState);
+            if (balanceresult.IsSuccess)
+            {
+                return Ok(new BalanceResponse
+                {
+                    Balance = balanceresult.Value
+                });
+            }
+
+            return BadRequest(new {Message = balanceresult.ErrorMessage});
         }
     }
 }
