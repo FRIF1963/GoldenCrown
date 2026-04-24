@@ -1,8 +1,9 @@
-﻿using GoldenCrown.Services;
+﻿using Azure.Core;
+using GoldenCrown.Database.Models;
+using GoldenCrown.DTOs.Finance;
+using GoldenCrown.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using GoldenCrown.DTOs.Finance;
-using GoldenCrown.Database.Models;
 
 
 namespace GoldenCrown.Controllers
@@ -75,22 +76,17 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("History")]
-        public async Task<IActionResult> GetHistoryAsync(
-            [FromHeader] string token,
-            [FromHeader] DateTime from,
-            [FromHeader] DateTime to,
-            [FromHeader] int ofset,
-            [FromHeader] int limit)
+        public async Task<IActionResult> GetHistoryAsync([FromQuery] TransactionHistoryRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(token, from, to, ofset, limit);
+            var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(request.Token, request.From, request.To, request.Ofset, request.Limit);
 
             if(historyTransactionResult.IsSuccess)
             {
-                return Ok(historyTransactionResult);
+                return Ok(historyTransactionResult.Value);
             }
 
             return BadRequest(new {Message =  historyTransactionResult.ErrorMessage});

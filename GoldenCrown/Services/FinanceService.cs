@@ -132,15 +132,6 @@ namespace GoldenCrown.Services
                 return Result<IEnumerable<TransactionHistoryResponse >>.Failure("Session expired");
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == session.UserId);
-
-            if (user == null)
-            {
-                return Result<IEnumerable<TransactionHistoryResponse>>.Failure("User Not Found");
-            }
-
-
-
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
 
             if (account == null)
@@ -157,21 +148,39 @@ namespace GoldenCrown.Services
 
             var transactionResult = new List<TransactionHistoryResponse>();
 
+            var allSenderUsers = transactions.Select(u => u.SenderAccountId);
+
+            var allReceiverUsers = transactions.Select(u => u.ReceiverAccountId);
+
+            var allUsers = allSenderUsers.ToHashSet();
+
+            foreach (var reciever in allReceiverUsers)
+            {
+                allUsers.Add(reciever);
+            }
+
+            var names = await _context.Accounts.Where(a => allUsers.Contains(a.Id))
+                    .Join(_context.Users,
+                    acc => acc.UserId,
+                    u => u.Id,
+                    (acc, u) => new
+                    { 
+                        Name = u.Name,
+                        AccId = acc.Id
+                    }).ToDictionaryAsync(x => x.AccId);
+
             foreach (var transaction in transactions)
             {
-                var userSender = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.SenderAccountId);
-
-                var userReceiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.ReceiverAccountId);
-
+                var senderName = names[transaction.SenderAccountId].Name;
+                var ReceiverName = names[transaction.ReceiverAccountId].Name;
                 transactionResult.Add(new TransactionHistoryResponse
                 {
-                    SenderName = userSender.Name,
-                    ReceiverName = userReceiver.Name,
+                    SenderName = senderName,
+                    ReceiverName = ReceiverName,
                     CreateAt = transaction.CreateAt,
                     Amoutn = transaction.Amoutn,
                 });
             }
-
 
             if (transactions == null)
             {
