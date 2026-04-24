@@ -86,7 +86,7 @@ namespace GoldenCrown.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var historyTransactionResult = await _financeSevice.GetHistoryAsync(token, from, to, ofset, limit);
+            var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(token, from, to, ofset, limit);
 
             if(historyTransactionResult.IsSuccess)
             {

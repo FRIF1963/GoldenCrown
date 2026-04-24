@@ -1,6 +1,7 @@
 ﻿using GoldenCrown.Database;
 using Microsoft.EntityFrameworkCore;
 using GoldenCrown.Database.Models;
+using GoldenCrown.DTOs.Finance;
 
 namespace GoldenCrown.Services
 {
@@ -122,20 +123,29 @@ namespace GoldenCrown.Services
             return Result.Success();
         }
 
-        public async Task<Result<List<Transaction>>> GetHistoryAsync(string token, DateTime from, DateTime to, int ofset, int limit)
+        public async Task<Result<IEnumerable<TransactionHistoryResponse>>> GetTransactionHistoryAsync(string token, DateTime from, DateTime to, int ofset, int limit)
         {
             var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
 
             if (session == null)
             {
-                return Result<List<Transaction>>.Failure("Session expired");
+                return Result<IEnumerable<TransactionHistoryResponse >>.Failure("Session expired");
             }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == session.UserId);
+
+            if (user == null)
+            {
+                return Result<IEnumerable<TransactionHistoryResponse>>.Failure("User Not Found");
+            }
+
+
 
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
 
             if (account == null)
             {
-                return Result<List<Transaction>>.Failure($"Not Found");
+                return Result<IEnumerable<TransactionHistoryResponse>>.Failure($"Not Found");
             }
 
             var transactions = await _context.Transactions
@@ -145,13 +155,30 @@ namespace GoldenCrown.Services
                 .Take(limit)
                 .ToListAsync();
 
-            if(transactions == null)
+            var transactionResult = new List<TransactionHistoryResponse>();
+
+            foreach (var transaction in transactions)
             {
-                return Result<List<Transaction>>.Failure("Not Find Transactions");
+                var userSender = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.SenderAccountId);
+
+                var userReceiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.ReceiverAccountId);
+
+                transactionResult.Add(new TransactionHistoryResponse
+                {
+                    SenderName = userSender.Name,
+                    ReceiverName = userReceiver.Name,
+                    CreateAt = transaction.CreateAt,
+                    Amoutn = transaction.Amoutn,
+                });
             }
 
-            return Result<List<Transaction>>.Success(transactions);
 
+            if (transactions == null)
+            {
+                return Result<IEnumerable<TransactionHistoryResponse>>.Failure("Not Find Transactions");
+            }
+
+            return Result<IEnumerable<TransactionHistoryResponse>>.Success(transactionResult);
         }
     }
 }
