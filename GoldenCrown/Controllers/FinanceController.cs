@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using GoldenCrown.Attributes;
 using GoldenCrown.Database.Models;
 using GoldenCrown.DTOs.Finance;
 using GoldenCrown.Services;
@@ -10,6 +11,7 @@ namespace GoldenCrown.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [MyAuthorize]
     public class FinanceController : ControllerBase
     {
         private readonly IFinanceService _financeSevice;
@@ -90,6 +92,12 @@ namespace GoldenCrown.Controllers
             }
 
             return BadRequest(new {Message =  historyTransactionResult.ErrorMessage});
+        }
+
+        internal int GetUserId()
+        {
+            var userId = HttpContext.Items[Constans.UserIdContextParametr] as int?;
+            return userId!.Value;
         }
     }
 }
