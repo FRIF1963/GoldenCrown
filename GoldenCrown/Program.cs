@@ -1,4 +1,5 @@
 
+using GoldenCrown.BackGroundServices;
 using GoldenCrown.Database;
 using GoldenCrown.MiddleWare;
 using GoldenCrown.Services;
@@ -23,6 +24,8 @@ namespace GoldenCrown
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IFinanceService, FinanceService>();
+
+            builder.Services.AddHostedService<SessionCleanupService>();
 
             builder.Services.AddControllers();
 
