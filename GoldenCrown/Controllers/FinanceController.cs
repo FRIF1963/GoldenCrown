@@ -22,13 +22,9 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("balance")]
-        public async Task<IActionResult> GetBalanceAsync([FromHeader(Name = "Token")] string token)
+        public async Task<IActionResult> GetBalanceAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var balanceresult = await _financeSevice.GetBalanceAsync(token);
+            var balanceresult = await _financeSevice.GetBalanceAsync(GetUserId());
 
             if (balanceresult.IsSuccess)
             {
@@ -49,7 +45,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(ModelState);
             }
 
-            var transferresult = await _financeSevice.TransferAsync(request.Token, request.ReceiverLogin, request.Amount);
+            var transferresult = await _financeSevice.TransferAsync(GetUserId(), request.ReceiverLogin, request.Amount);
 
             if (transferresult.IsSuccess)
             {
@@ -67,7 +63,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(ModelState);
             }
 
-            var depositResult = await _financeSevice.DepositAsync(request.token, request.amount);
+            var depositResult = await _financeSevice.DepositAsync(GetUserId(), request.amount);
             
             if(depositResult.IsSuccess)
             {
@@ -84,7 +80,7 @@ namespace GoldenCrown.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(request.Token, request.From, request.To, request.Ofset, request.Limit);
+            var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(GetUserId(), request.From, request.To, request.Ofset, request.Limit);
 
             if(historyTransactionResult.IsSuccess)
             {

@@ -5,9 +5,6 @@ namespace GoldenCrown.DTOs.Finance
 {
     public class TransferRequest
     {
-        [FromQuery]
-        [Required]
-        public string Token {  get; set; }
 
         [Required]
         public string ReceiverLogin { get; set; }

@@ -14,16 +14,10 @@ namespace GoldenCrown.Services
             _context = context;
         }
 
-        public async Task<Result<decimal>> GetBalanceAsync(string token)
+        public async Task<Result<decimal>> GetBalanceAsync(int userId)
         {
-            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
 
-            if (session == null)
-            {
-                return Result<decimal>.Failure("Session expired");
-            }
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == userId);
 
             if (account == null)
             {
@@ -33,16 +27,9 @@ namespace GoldenCrown.Services
             return Result<decimal>.Success(account!.Balance);
         }
 
-        public async Task<Result> DepositAsync(string token, decimal amount)
+        public async Task<Result> DepositAsync(int userId, decimal amount)
         {
-            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
-
-            if (session == null)
-            {
-                return Result.Failure("Session expired");
-            }
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == userId);
 
             if (account == null)
             {
@@ -65,15 +52,8 @@ namespace GoldenCrown.Services
             return Result.Success();
         }
 
-        public async Task<Result> TransferAsync(string token, string receiverLogin, decimal amount)
+        public async Task<Result> TransferAsync(int userId, string receiverLogin, decimal amount)
         {
-            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
-
-            if (session == null)
-            {
-                return Result.Failure("Session expired");
-            }
-
             var receiverUser = await _context.Users.FirstOrDefaultAsync(u => u.Login == receiverLogin);
 
             if (receiverUser == null)
@@ -81,7 +61,7 @@ namespace GoldenCrown.Services
                 return Result.Failure($"{receiverLogin} Not Found");
             }
 
-            var senderAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+            var senderAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == userId);
 
             if (senderAccount == null)
             {
@@ -123,16 +103,9 @@ namespace GoldenCrown.Services
             return Result.Success();
         }
 
-        public async Task<Result<IEnumerable<TransactionHistoryResponse>>> GetTransactionHistoryAsync(string token, DateTime from, DateTime to, int ofset, int limit)
+        public async Task<Result<IEnumerable<TransactionHistoryResponse>>> GetTransactionHistoryAsync(int userId, DateTime from, DateTime to, int ofset, int limit)
         {
-            var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
-
-            if (session == null)
-            {
-                return Result<IEnumerable<TransactionHistoryResponse >>.Failure("Session expired");
-            }
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == session.UserId);
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == userId);
 
             if (account == null)
             {
