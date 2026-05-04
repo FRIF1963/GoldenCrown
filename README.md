@@ -48,6 +48,7 @@ json
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=GoldenCrownDB;Trusted_Connection=True;MultipleActiveResultSets=true"
   }
 }
+
 ### 4. Применение миграций
 В Package Manager Console или терминале:
 
@@ -138,7 +139,7 @@ json
 400 – недостаточно средств
 
 ### 6. История транзакций
-GET /api/finance/history?from=2025-01-01&to=2025-12-31&limit=10&offset=0
+**GET /api/finance/history?from=2025-01-01&to=2025-12-31&limit=10&offset=0**
 
 Заголовок: Authorization: ...
 
