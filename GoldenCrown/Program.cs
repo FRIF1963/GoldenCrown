@@ -53,7 +53,16 @@ namespace GoldenCrown
 
             app.MapControllers();
 
+            MigrateDatabase(app);
+
             app.Run();
+        }
+
+        private static void MigrateDatabase(WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+            db.Database.Migrate();
         }
     }
 }
