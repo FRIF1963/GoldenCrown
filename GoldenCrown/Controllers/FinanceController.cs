@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using FluentValidation;
 using GoldenCrown.Attributes;
 using GoldenCrown.Database.Models;
 using GoldenCrown.DTOs.Finance;
@@ -38,11 +39,12 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("transfer")]
-        public async Task<IActionResult> TransferAsync([FromBody] DTOs.Finance.TransferRequest request)
+        public async Task<IActionResult> TransferAsync([FromBody] DTOs.Finance.TransferRequest request, [FromServices] IValidator<TransferRequest> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = validator.Validate(request);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(validationResult.ToDictionary());
             }
 
             var transferresult = await _financeSevice.TransferAsync(GetUserId(), request.ReceiverLogin, request.Amount);
@@ -56,11 +58,12 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("Deposit")]
-        public async Task<IActionResult> Deposit([FromBody] DTOs.Finance.DepositRequest request)
+        public async Task<IActionResult> Deposit([FromBody] DTOs.Finance.DepositRequest request, [FromServices] IValidator<DepositRequest> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = validator.Validate(request);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(validationResult.ToDictionary());
             }
 
             var depositResult = await _financeSevice.DepositAsync(GetUserId(), request.amount);
@@ -74,11 +77,12 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("History")]
-        public async Task<IActionResult> GetHistoryAsync([FromQuery] TransactionHistoryRequest request)
+        public async Task<IActionResult> GetHistoryAsync([FromQuery] TransactionHistoryRequest request, [FromServices] IValidator<TransactionHistoryRequest> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = validator.Validate(request);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(validationResult.ToDictionary());
             }
             var historyTransactionResult = await _financeSevice.GetTransactionHistoryAsync(GetUserId(), request.From, request.To, request.Ofset, request.Limit);
 

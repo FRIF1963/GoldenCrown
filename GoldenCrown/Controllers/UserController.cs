@@ -1,4 +1,7 @@
-﻿using GoldenCrown.Services;
+﻿using FluentValidation;
+using GoldenCrown.DTOs.User;
+using GoldenCrown.Services;
+using GoldenCrown.Validators;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +20,12 @@ namespace GoldenCrown.Controllers
 
 
         [HttpPost("register")] // Post localhost:7777/api/user/request
-        public async Task<IActionResult> Register([FromBody] DTOs.User.RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] DTOs.User.RegisterRequest request, [FromServices] IValidator<DTOs.User.RegisterRequest> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = validator.Validate(request);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(validationResult.ToDictionary());
             }
 
             var result = await _userService.RegisterAsync(request.Login, request.Name, request.Password);
@@ -33,11 +37,13 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] DTOs.User.LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] DTOs.User.LoginRequest request, [FromServices] IValidator<DTOs.User.LoginRequest> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = validator.Validate(request);
+
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(validationResult.ToDictionary());
             }
 
             var result = await _userService.LoginAsync(request.Login, request.Password);
