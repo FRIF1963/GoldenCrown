@@ -29,7 +29,7 @@ namespace GoldenCrown.Controllers
         [HttpGet("balance")]
         public async Task<IActionResult> GetBalanceAsync()
         {
-            var command = new GetBalanceCommand(GetUserId());
+            var command = new GetBalanceQuery(GetUserId());
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -92,7 +92,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(validationResult.ToDictionary());
             }
 
-            var command = new GetTransactionHistoryCommand(GetUserId(), request.From, request.To, request.Ofset, request.Limit);
+            var command = new GetTransactionHistoryQuery(GetUserId(), request.From, request.To, request.Ofset, request.Limit);
             var result = await _mediator.Send(command);
 
             if(result.IsSuccess)
