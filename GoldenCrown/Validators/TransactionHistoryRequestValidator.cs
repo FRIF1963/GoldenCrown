@@ -11,7 +11,7 @@ namespace GoldenCrown.Validators
 
             RuleFor(TransactionHistoryRequest => TransactionHistoryRequest.To).NotEmpty();
 
-            RuleFor(TransactionHistoryRequest => TransactionHistoryRequest.Ofset).NotEmpty();
+            //RuleFor(TransactionHistoryRequest => TransactionHistoryRequest.Ofset).NotEmpty();
 
             RuleFor(TransactionHistoryRequest => TransactionHistoryRequest.Limit).NotEmpty();
         }
