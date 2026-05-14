@@ -11,5 +11,7 @@
         public DateTime CreateAt { get; set; }
 
         public decimal Amoutn { get; set; }
+
+        public string Currency { get; set; }
     }
 }

@@ -7,8 +7,11 @@ namespace GoldenCrown.Validators
     {
             public DepositRequestValidator()
             {
-                RuleFor(DepositRequest => DepositRequest.amount).NotEmpty().
+                RuleFor(DepositRequest => DepositRequest.Amount).NotEmpty().
                 GreaterThan(0).WithMessage("Еhe amount must be greater than 0");
-            }
+
+                RuleFor(DepositRequest => DepositRequest.Currency).NotEmpty()
+                .WithMessage("Укажите валюту");
+        }
     }
 }

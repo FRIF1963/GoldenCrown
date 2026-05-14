@@ -1,5 +1,7 @@
 ﻿using Azure.Core;
 using FluentValidation;
+using GoldenCrown.Api.Database.Models;
+using GoldenCrown.Api.DTOs.Finance;
 using GoldenCrown.Attributes;
 using GoldenCrown.Database.Models;
 using GoldenCrown.DTOs.Finance;
@@ -10,6 +12,7 @@ using GoldenCrown.Feauters.Finance.Transfer;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace GoldenCrown.Controllers
@@ -27,9 +30,15 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("balance")]
-        public async Task<IActionResult> GetBalanceAsync()
+        public async Task<IActionResult> GetBalanceAsync(BalanceRequest request, [FromServices] IValidator<BalanceRequest> validator)
         {
-            var command = new GetBalanceQuery(GetUserId());
+            var validationResult = validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToDictionary());
+            }
+
+            var command = new GetBalanceQuery(GetUserId(), request.Currency);
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -52,7 +61,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(validationResult.ToDictionary());
             }
 
-            var command = new TransferCommand(GetUserId(), request.ReceiverLogin, request.Amount);
+            var command = new TransferCommand(GetUserId(), request.ReceiverLogin, request.Amount, request.Currency);
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -72,7 +81,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(validationResult.ToDictionary());
             }
 
-            var command = new DepositCommand(GetUserId(), request.amount);
+            var command = new DepositCommand(GetUserId(), request.Amount, request.Currency);
             var result = await _mediator.Send(command);
             
             if(result)

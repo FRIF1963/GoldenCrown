@@ -10,7 +10,9 @@ namespace GoldenCrown.Validators
             RuleFor(TransferRequest => TransferRequest.ReceiverLogin).NotEmpty();
 
             RuleFor(TransferRequest => TransferRequest.Amount).NotEmpty().
-                GreaterThan(0).WithMessage("Amount must be greater than 0"); ;
+                GreaterThan(0).WithMessage("Amount must be greater than 0");
+
+            RuleFor(TransferRequest => TransferRequest.Currency).NotEmpty();
         }
     }
 }

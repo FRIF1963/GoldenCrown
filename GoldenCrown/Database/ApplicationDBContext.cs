@@ -1,4 +1,5 @@
-﻿using GoldenCrown.Database.Models;
+﻿using GoldenCrown.Api.Database.Models;
+using GoldenCrown.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -47,9 +48,13 @@ namespace GoldenCrown.Database
             accountentity.Property(a => a.UserId)
                 .HasColumnName("user_id")
                 .IsRequired();
-            accountentity.HasOne<User>() //Связь 1 к 1
-                .WithOne()
-                .HasForeignKey<Account>(a => a.UserId)
+            accountentity.Property(a => a.Currency)
+                .HasColumnName("currency")
+                .IsRequired()
+                .HasDefaultValue(Currency.RUB);
+            accountentity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             var sessionentity = modelBuilder.Entity<Session>()
@@ -80,6 +85,9 @@ namespace GoldenCrown.Database
                 .IsRequired();
             transactionentity.Property(t => t.CreateAt)
                 .HasColumnName("create_at")
+                .IsRequired();
+            transactionentity.Property(t => t.Currency)
+                .HasColumnName("currency")
                 .IsRequired();
             transactionentity.Property(t => t.SenderAccountId)
                 .HasColumnName("sender_account_id")
