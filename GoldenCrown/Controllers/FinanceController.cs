@@ -40,7 +40,7 @@ namespace GoldenCrown.Controllers
                 });
             }
 
-            return BadRequest(new {Message = result.ErrorMessage});
+            return BadRequest();
         }
 
         [HttpPost("transfer")]
@@ -60,7 +60,7 @@ namespace GoldenCrown.Controllers
                 return Ok();
             }
 
-            return BadRequest(new { Message = result.ErrorMessage });
+            return BadRequest();
         }
 
         [HttpPost("Deposit")]
@@ -80,7 +80,7 @@ namespace GoldenCrown.Controllers
                 return Ok();
             }
 
-            return BadRequest(new { Message = result.ErrorMessage });
+            return BadRequest();
         }
 
         [HttpGet("History")]
@@ -100,7 +100,7 @@ namespace GoldenCrown.Controllers
                 return Ok(result.Value);
             }
 
-            return BadRequest(new {Message = result.ErrorMessage});
+            return BadRequest();
         }
 
         internal int GetUserId()

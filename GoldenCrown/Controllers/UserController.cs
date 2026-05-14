@@ -34,7 +34,7 @@ namespace GoldenCrown.Controllers
 
             if (result) return Ok();
 
-            return BadRequest(new { Message = "User registration failed" });
+            return BadRequest();
             
         }
 

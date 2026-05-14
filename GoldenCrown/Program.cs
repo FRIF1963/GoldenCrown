@@ -25,6 +25,8 @@ namespace GoldenCrown
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+            builder.Services.AddProblemDetails();
+
             builder.Services.AddValidatorsFromAssemblyContaining<LoginRequest>();
 
             builder.Services.AddHostedService<SessionCleanupService>();
@@ -47,6 +49,10 @@ namespace GoldenCrown
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseExceptionHandler();
+
+            app.UseStatusCodePages();
 
             app.UseHttpsRedirection();
 
