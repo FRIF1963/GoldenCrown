@@ -1,4 +1,4 @@
-﻿using GoldenCrown.Api.Database.Models;
+﻿using GoldenCrown.Domain.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable

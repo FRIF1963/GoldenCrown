@@ -1,9 +1,9 @@
-﻿using GoldenCrown.Database;
-using GoldenCrown.Feauters.Finance.Deposit;
+﻿using GoldenCrown.Application;
+using GoldenCrown.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GoldenCrown.Feauters.Finance.GetBalance
+namespace GoldenCrown.Application.Feauters.Finance.GetBalance
 {
     public class GetBalanceQuery : IRequest<Result<decimal>>
     {

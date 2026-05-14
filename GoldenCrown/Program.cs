@@ -1,5 +1,6 @@
 
 using FluentValidation;
+using GoldenCrown.Application.Feauters.User.UserLogin;
 using GoldenCrown.BackGroundServices;
 using GoldenCrown.Database;
 using GoldenCrown.DTOs.User;
@@ -23,11 +24,13 @@ namespace GoldenCrown
             builder.Services.AddDbContext<ApplicationDBContext>(options => 
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UserLoginCommand).Assembly));
 
             builder.Services.AddProblemDetails();
 
             builder.Services.AddValidatorsFromAssemblyContaining<LoginRequest>();
+
+            builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 
             builder.Services.AddHostedService<SessionCleanupService>();
 

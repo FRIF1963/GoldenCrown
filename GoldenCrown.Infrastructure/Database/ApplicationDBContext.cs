@@ -1,5 +1,4 @@
-﻿using GoldenCrown.Api.Database.Models;
-using GoldenCrown.Database.Models;
+﻿using GoldenCrown.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -79,7 +78,7 @@ namespace GoldenCrown.Database
             transactionentity.Property(t => t.Id)
                 .HasColumnName("id")
                 .UseIdentityColumn();
-            transactionentity.Property(t => t.Amoutn)
+            transactionentity.Property(t => t.Amount)
                 .HasColumnName("amoutn")
                 .HasPrecision(19, 4)
                 .IsRequired();

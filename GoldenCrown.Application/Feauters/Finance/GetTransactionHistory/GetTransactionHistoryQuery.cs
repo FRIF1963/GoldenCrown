@@ -1,17 +1,16 @@
-﻿using GoldenCrown.Database;
-using GoldenCrown.Database.Models;
-using GoldenCrown.DTOs.Finance;
-using GoldenCrown.Feauters.Finance.Deposit;
+﻿using GoldenCrown.Application;
+using GoldenCrown.Application.DTOs.Finance;
+using GoldenCrown.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GoldenCrown.Feauters.Finance.GetTransactionHistory
+namespace GoldenCrown.Application.Feauters.Finance.GetTransactionHistory
 {
-    public class GetTransactionHistoryQuery : IRequest<Result<IEnumerable<TransactionHistoryResponse>>>
+    public class GetTransactionHistoryQuery : IRequest<Result<IEnumerable<TransactionHistoryDto>>>
     {
         public int UserId { get; set; }
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
+        public DateTime? From { get; set; }
+        public DateTime? To { get; set; }
         public int Ofset { get; set; }
         public int Limit { get; set; }
 
@@ -24,7 +23,7 @@ namespace GoldenCrown.Feauters.Finance.GetTransactionHistory
             Ofset = ofset;
             Limit = limit;
         }
-        public class GetTransactionHistoryQueryHandler : IRequestHandler<GetTransactionHistoryQuery, Result<IEnumerable<TransactionHistoryResponse>>>
+        public class GetTransactionHistoryQueryHandler : IRequestHandler<GetTransactionHistoryQuery, Result<IEnumerable<TransactionHistoryDto>>>
         {
             public ApplicationDBContext _context { get; set; }
 
@@ -33,7 +32,7 @@ namespace GoldenCrown.Feauters.Finance.GetTransactionHistory
                 _context = context;
             }
 
-            public async Task<Result<IEnumerable<TransactionHistoryResponse>>> Handle(GetTransactionHistoryQuery request, CancellationToken cancellationToken)
+            public async Task<Result<IEnumerable<TransactionHistoryDto>>> Handle(GetTransactionHistoryQuery request, CancellationToken cancellationToken)
             {
                 var userAccountIds = await _context.Accounts
                     .Where(a => a.UserId == request.UserId)
@@ -73,18 +72,18 @@ namespace GoldenCrown.Feauters.Finance.GetTransactionHistory
                     })
                     .ToDictionaryAsync(x => x.AccId, cancellationToken);
 
-                var result = dbTransactions.Select(t => new TransactionHistoryResponse
+                var result = dbTransactions.Select(t => new TransactionHistoryDto
                 {
                     SenderName = names[t.SenderAccountId].Name,
                     ReceiverName = names[t.ReceiverAccountId].Name,
-                    Amoutn = t.Amoutn,
+                    Amount = t.Amount,
                     CreateAt = t.CreateAt,
                     Currency = t.Currency,
 
                 }).ToList();
 
 
-                return Result<IEnumerable<TransactionHistoryResponse>>.Success(result);
+                return Result<IEnumerable<TransactionHistoryDto>>.Success(result);
             }
         }
     }

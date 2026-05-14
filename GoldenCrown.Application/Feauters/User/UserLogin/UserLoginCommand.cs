@@ -1,9 +1,10 @@
-﻿using GoldenCrown.Database;
-using GoldenCrown.Database.Models;
+﻿using GoldenCrown.Application;
+using GoldenCrown.Database;
+using GoldenCrown.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GoldenCrown.Feauters.User.UserLogin
+namespace GoldenCrown.Application.Feauters.User.UserLogin
 {
     public class UserLoginCommand : IRequest<Result<string>>
     {

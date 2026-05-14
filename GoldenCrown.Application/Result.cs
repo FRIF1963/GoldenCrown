@@ -1,6 +1,4 @@
-﻿using System.Net.NetworkInformation;
-
-namespace GoldenCrown
+﻿namespace GoldenCrown.Application
 {
     public class Result<T> : Result
     {

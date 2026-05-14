@@ -1,10 +1,10 @@
-﻿using GoldenCrown.Api.Database.Models;
+﻿using GoldenCrown.Application;
 using GoldenCrown.Database;
-using GoldenCrown.Database.Models;
+using GoldenCrown.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GoldenCrown.Feauters.User.UserLogin
+namespace GoldenCrown.Application.Feauters.User.UserRegister
 {
     public class UserRegisterCommand : IRequest<Result<bool>>
     {
@@ -38,7 +38,7 @@ namespace GoldenCrown.Feauters.User.UserLogin
                     return Result<bool>.Failure("Not Found");
                 }
 
-                var user = new Database.Models.User { Login = request.Login, Name = request.Name, Password = request.Password };
+                var user = new Domain.Models.User { Login = request.Login, Name = request.Name, Password = request.Password };
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();

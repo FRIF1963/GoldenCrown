@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-
-namespace GoldenCrown.Database.Models
+﻿namespace GoldenCrown.Domain.Models
 {
     public class User
     {

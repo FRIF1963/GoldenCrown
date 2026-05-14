@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
-using GoldenCrown.DTOs.User;
-using GoldenCrown.Feauters.User.UserLogin;
-using GoldenCrown.Validators;
+using GoldenCrown.Application.Feauters;
+using GoldenCrown.Application.Feauters.User.UserLogin;
+using GoldenCrown.Application.Feauters.User.UserRegister;
 using MediatR;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace GoldenCrown.Controllers
 {

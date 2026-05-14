@@ -1,8 +1,10 @@
-﻿using GoldenCrown.Database;
-using GoldenCrown.Database.Models;
+﻿using GoldenCrown.Application;
+using GoldenCrown.Database;
+using GoldenCrown.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-namespace GoldenCrown.Feauters.Finance.Transfer
+
+namespace GoldenCrown.Application.Feauters.Finance.Transfer
 {
     public class TransferCommand : IRequest<Result>
     {
@@ -73,7 +75,7 @@ namespace GoldenCrown.Feauters.Finance.Transfer
                     SenderAccountId = senderAccount.Id,
                     ReceiverAccountId = receiverAccount.Id,
                     CreateAt = DateTime.UtcNow,
-                    Amoutn = request.Amount,
+                    Amount = request.Amount,
                     Currency = request.Currency
                 };
 

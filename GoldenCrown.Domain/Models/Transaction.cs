@@ -1,4 +1,4 @@
-﻿namespace GoldenCrown.Database.Models
+﻿namespace GoldenCrown.Domain.Models
 {
     public class Transaction
     {
@@ -10,7 +10,7 @@
 
         public DateTime CreateAt { get; set; }
 
-        public decimal Amoutn { get; set; }
+        public decimal Amount { get; set; }
 
         public string Currency { get; set; }
     }

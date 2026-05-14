@@ -1,18 +1,14 @@
-﻿using Azure.Core;
+﻿using AutoMapper;
 using FluentValidation;
-using GoldenCrown.Api.Database.Models;
 using GoldenCrown.Api.DTOs.Finance;
+using GoldenCrown.Application.Feauters.Finance.Deposit;
+using GoldenCrown.Application.Feauters.Finance.GetBalance;
+using GoldenCrown.Application.Feauters.Finance.GetTransactionHistory;
+using GoldenCrown.Application.Feauters.Finance.Transfer;
 using GoldenCrown.Attributes;
-using GoldenCrown.Database.Models;
 using GoldenCrown.DTOs.Finance;
-using GoldenCrown.Feauters.Finance.Deposit;
-using GoldenCrown.Feauters.Finance.GetBalance;
-using GoldenCrown.Feauters.Finance.GetTransactionHistory;
-using GoldenCrown.Feauters.Finance.Transfer;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 
 namespace GoldenCrown.Controllers
@@ -23,10 +19,12 @@ namespace GoldenCrown.Controllers
     public class FinanceController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public FinanceController(IMediator mediator)
+        public FinanceController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         [HttpGet("balance")]
@@ -93,7 +91,7 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("History")]
-        public async Task<IActionResult> GetHistoryAsync([FromQuery] TransactionHistoryRequest request, [FromServices] IValidator<TransactionHistoryRequest> validator)
+        public async Task<ActionResult<IEnumerable<TransactionHistoryResponse>>> GetHistoryAsync([FromQuery] TransactionHistoryRequest request, [FromServices] IValidator<TransactionHistoryRequest> validator)
         {
             var validationResult = validator.Validate(request);
             if (!validationResult.IsValid)
@@ -106,7 +104,8 @@ namespace GoldenCrown.Controllers
 
             if(result.IsSuccess)
             {
-                return Ok(result.Value);
+                var response = result.Value.Select(_mapper.Map<TransactionHistoryResponse>);
+                return Ok(response);
             }
 
             return BadRequest();

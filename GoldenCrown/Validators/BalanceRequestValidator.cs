@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using GoldenCrown.Api.Database.Models;
 using GoldenCrown.Api.DTOs.Finance;
-using GoldenCrown.DTOs.User;
 namespace GoldenCrown.Validators
 
 {

@@ -1,4 +1,4 @@
-﻿namespace GoldenCrown.Api.Database.Models
+﻿namespace GoldenCrown.Domain.Models
 {
     public class Currency
     {

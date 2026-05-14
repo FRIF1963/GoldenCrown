@@ -1,11 +1,10 @@
-﻿using GoldenCrown.Api.Database.Models;
+﻿using GoldenCrown.Application;
 using GoldenCrown.Database;
-using GoldenCrown.Database.Models;
-using GoldenCrown.Feauters.User.UserLogin;
+using GoldenCrown.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GoldenCrown.Feauters.Finance.Deposit
+namespace GoldenCrown.Application.Feauters.Finance.Deposit
 {
     public class DepositCommand : IRequest<Result>
     {
@@ -45,7 +44,7 @@ namespace GoldenCrown.Feauters.Finance.Deposit
                     SenderAccountId = account.Id,
                     ReceiverAccountId = account.Id,
                     CreateAt = DateTime.UtcNow,
-                    Amoutn = request.Amount,
+                    Amount = request.Amount,
                     Currency = request.Currency
                 };
 
