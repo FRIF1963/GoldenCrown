@@ -8,9 +8,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=mssql;Database=GoldenCrown;User Id=sa;Password=MsSql_Pass123!;TrustServerCertificate=True
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
     depends_on:
       mssql:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -28,6 +33,21 @@ services:
       retries: 10
       start_period: 30s
 
+  rabbitmq:
+    image: rabbitmq:3.12.3-management
+    hostname: rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+
 volumes:
   mssql_goldencrown_data:
   pg_goldencrown_data:
+  rabbitmq_data:
