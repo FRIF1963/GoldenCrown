@@ -1,6 +1,7 @@
 <Solution>
+  <Project Path="GoldenCrown.Api/GoldenCrown.Api.csproj" />
   <Project Path="GoldenCrown.Application/GoldenCrown.Application.csproj" Id="f34dc60c-be38-4f96-96c8-8cb75bd7b3b3" />
   <Project Path="GoldenCrown.Domain/GoldenCrown.Domain.csproj" Id="a8a71915-2da8-45c0-a98a-3ae75d74ffbe" />
   <Project Path="GoldenCrown.Infrastructure/GoldenCrown.Infrastructure.csproj" Id="71ca51a7-cc78-42e5-9784-b7e6d1881281" />
-  <Project Path="GoldenCrown.Api/GoldenCrown.Api.csproj" />
+  <Project Path="GoldenCrown.TaxInspectionConsole/GoldenCrown.TaxInspectionConsole.csproj" Id="66cd3537-7202-43e8-8fea-83ed5a5f19e9" />
 </Solution>

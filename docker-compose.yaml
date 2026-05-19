@@ -45,6 +45,24 @@ services:
       - 5672:5672
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+
+  tax-inspection-console:
+    build:
+      context: ./
+      dockerfile: GoldenCrown.TaxInspectionConsole/Dockerfile
+    environment:
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
 
 volumes:

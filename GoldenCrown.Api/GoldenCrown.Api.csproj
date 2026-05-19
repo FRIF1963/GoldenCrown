@@ -26,6 +26,7 @@
     <ProjectReference Include="..\GoldenCrown.Application\GoldenCrown.Application.csproj" />
     <ProjectReference Include="..\GoldenCrown.Domain\GoldenCrown.Domain.csproj" />
     <ProjectReference Include="..\GoldenCrown.Infrastructure\GoldenCrown.Infrastructure.csproj" />
+	  <ProjectReference Include="..\GoldenCrown.TaxInspectionConsole\GoldenCrown.TaxInspectionConsole.csproj" />
   </ItemGroup>
 
   <ItemGroup>
