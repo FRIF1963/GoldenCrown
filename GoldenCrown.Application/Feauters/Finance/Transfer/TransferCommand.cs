@@ -1,6 +1,5 @@
 ﻿using GoldenCrown.Application;
 using GoldenCrown.Application.Events;
-using GoldenCrown.Application.Services.Currency;
 using GoldenCrown.Database;
 using GoldenCrown.Domain.Models;
 using GoldenCrown.Infrastructure.RabbitMQ;
@@ -19,15 +18,12 @@ namespace GoldenCrown.Application.Feauters.Finance.Transfer
 
         public string Currency {  get; set; }
 
-        public string ReceiverCurrency { get; set; }
-
-        public TransferCommand(int userId, string receiverLogin, decimal amount, string currency, string receiverCurrency)
+        public TransferCommand(int userId, string receiverLogin, decimal amount, string currency)
         {
             UserId = userId;
             ReceiverLogin = receiverLogin;
             Amount = amount;
             Currency = currency;
-            ReceiverCurrency = receiverCurrency;
         }
 
         public class TransferCommandHandler : IRequestHandler<TransferCommand, Result>
@@ -36,13 +32,10 @@ namespace GoldenCrown.Application.Feauters.Finance.Transfer
 
             private readonly IMessageProducer _messageProducer;
 
-            private readonly ICurrencyService _currencyService;
-
-            public TransferCommandHandler(ApplicationDBContext context, IMessageProducer messageProducer, ICurrencyService currencyService) 
+            public TransferCommandHandler(ApplicationDBContext context, IMessageProducer messageProducer) 
             { 
                 _context = context;
                 _messageProducer = messageProducer;
-                _currencyService = currencyService;
             }
 
             public async Task<Result> Handle(TransferCommand request, CancellationToken cancellationToken)
@@ -58,7 +51,14 @@ namespace GoldenCrown.Application.Feauters.Finance.Transfer
 
                 if (senderAccount == null)
                 {
-                    return Result.Failure($"Not Found senderAccount");
+                    return Result.Failure($"Not Found");
+                }
+
+                var receiverAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == receiverUser.Id && a.Currency == request.Currency, cancellationToken);
+
+                if (receiverAccount == null)
+                {
+                    return Result.Failure($"Not Found");
                 }
 
                 if (senderAccount.Balance < request.Amount)
@@ -70,18 +70,10 @@ namespace GoldenCrown.Application.Feauters.Finance.Transfer
                     return Result.Failure("Your balance must be greater than 0");
                 }
 
-                var receiverAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == receiverUser.Id && a.Currency == request.ReceiverCurrency, cancellationToken);
-
-                if (receiverAccount == null)
-                {
-                    return Result.Failure($"Not Found receiverAccount");
-                }
-
                 senderAccount.Balance -= request.Amount;
 
-                var targetAmount = await _currencyService.Convert(request.Amount, senderAccount.Currency, receiverAccount.Currency, cancellationToken);
+                receiverAccount.Balance += request.Amount;
 
-                receiverAccount.Balance += targetAmount;
 
                 var transaction = new Transaction
                 {
