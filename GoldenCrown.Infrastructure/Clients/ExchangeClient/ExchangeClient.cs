@@ -20,14 +20,18 @@ namespace GoldenCrown.Infrastructure.Clients.CurrencyClient
 
         public async Task<decimal> GetExchangeRate(string baseCurrencyCode, string targetCurrencyCode, CancellationToken cancellationToken)
         {
+            return (await GetExchangeRates(baseCurrencyCode, cancellationToken)).First(x => x.Quote == targetCurrencyCode).Rate;
+        }
+        public async Task<ExchangeRateResponse[]> GetExchangeRates(string baseCurrencyCode, CancellationToken cancellationToken)
+        {
             var url = string.Format(_settings.Url, baseCurrencyCode);
             var result = await _httpClient.GetAsync(url, cancellationToken);
             result.EnsureSuccessStatusCode();
             var rates = await result.Content.ReadFromJsonAsync<ExchangeRateResponse[]>(cancellationToken);
 
-            return rates!.First(x => x.Quote == targetCurrencyCode).Rate;
+            return rates!;
         }
+       
 
-        
     }
 }

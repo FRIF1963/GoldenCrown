@@ -7,10 +7,12 @@ using GoldenCrown.Database;
 using GoldenCrown.DTOs.User;
 using GoldenCrown.Infrastructure.Clients.CurrencyClient;
 using GoldenCrown.Infrastructure.Clients.CurrencyClient.Models;
+using GoldenCrown.Infrastructure.Clients.ExchangeClient;
 using GoldenCrown.Infrastructure.RabbitMQ;
 using GoldenCrown.MiddleWare;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 
 namespace GoldenCrown
@@ -42,13 +44,23 @@ namespace GoldenCrown
 
             builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 
+            builder.Services.AddMemoryCache();
+
             builder.Services.AddHostedService<SessionCleanupService>();
 
             builder.Services.AddControllers();
 
-            builder.Services.AddHttpClient<IExchangeClient, ExchangeClient>();
+            builder.Services.AddHttpClient();
 
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+
+            builder.Services.AddScoped<ExchangeClient>();
+            builder.Services.AddScoped<IExchangeClient, CachedExchangeClient>(sp =>
+            new CachedExchangeClient(
+                sp.GetRequiredService<ExchangeClient>(),
+                sp.GetRequiredService<IMemoryCache>(),
+                sp.GetRequiredService<ILogger<CachedExchangeClient>>()
+                ));
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
