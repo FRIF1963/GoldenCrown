@@ -21,7 +21,7 @@ namespace GoldenCrown.Infrastructure.Clients.CurrencyClient
         public async Task<decimal> GetExchangeRate(string baseCurrencyCode, string targetCurrencyCode, CancellationToken cancellationToken)
         {
             var url = string.Format(_settings.Url, baseCurrencyCode);
-            var result = await _httpClient.GetAsync(_settings.Url, cancellationToken);
+            var result = await _httpClient.GetAsync(url, cancellationToken);
             result.EnsureSuccessStatusCode();
             var rates = await result.Content.ReadFromJsonAsync<ExchangeRateResponse[]>(cancellationToken);
 
