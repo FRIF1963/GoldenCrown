@@ -1,9 +1,12 @@
 
 using FluentValidation;
 using GoldenCrown.Application.Feauters.User.UserLogin;
+using GoldenCrown.Application.Services.Currency;
 using GoldenCrown.BackGroundServices;
 using GoldenCrown.Database;
 using GoldenCrown.DTOs.User;
+using GoldenCrown.Infrastructure.Clients.CurrencyClient;
+using GoldenCrown.Infrastructure.Clients.CurrencyClient.Models;
 using GoldenCrown.Infrastructure.RabbitMQ;
 using GoldenCrown.MiddleWare;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +31,9 @@ namespace GoldenCrown
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UserLoginCommand).Assembly));
 
             builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
+
+            builder.Services.Configure<ExchangeClientSettings>(builder.Configuration.GetSection("ExchangeClient"));
+
             builder.Services.AddSingleton<IMessageProducer,RabbitMqMessageProducer>();
 
             builder.Services.AddProblemDetails();
@@ -39,6 +45,10 @@ namespace GoldenCrown
             builder.Services.AddHostedService<SessionCleanupService>();
 
             builder.Services.AddControllers();
+
+            builder.Services.AddHttpClient<IExchangeClient, ExchangeClient>();
+
+            builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

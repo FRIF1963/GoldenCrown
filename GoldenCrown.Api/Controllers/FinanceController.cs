@@ -59,7 +59,7 @@ namespace GoldenCrown.Controllers
                 return BadRequest(validationResult.ToDictionary());
             }
 
-            var command = new TransferCommand(GetUserId(), request.ReceiverLogin, request.Amount, request.Currency);
+            var command = new TransferCommand(GetUserId(), request.ReceiverLogin, request.Amount, request.Currency, request.ReceiverCurrency);
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
