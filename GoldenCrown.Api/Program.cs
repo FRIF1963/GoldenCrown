@@ -12,6 +12,7 @@ using GoldenCrown.Infrastructure.RabbitMQ;
 using GoldenCrown.MiddleWare;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 
@@ -27,7 +28,7 @@ namespace GoldenCrown
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found");
 
-            builder.Services.AddDbContext<ApplicationDBContext>(options => 
+            builder.Services.AddDbContext<ApplicationDBContext>(options =>
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UserLoginCommand).Assembly));
@@ -36,7 +37,7 @@ namespace GoldenCrown
 
             builder.Services.Configure<ExchangeClientSettings>(builder.Configuration.GetSection("ExchangeClient"));
 
-            builder.Services.AddSingleton<IMessageProducer,RabbitMqMessageProducer>();
+            builder.Services.AddSingleton<IMessageProducer, RabbitMqMessageProducer>();
 
             builder.Services.AddProblemDetails();
 
@@ -44,7 +45,12 @@ namespace GoldenCrown
 
             builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 
-            builder.Services.AddMemoryCache();
+
+            builder.Services.AddStackExchangeRedisCache(o =>
+            {
+                o.Configuration = builder.Configuration["Redis:Configuration"];
+                o.InstanceName = builder.Configuration["Redis:InstanceName"];
+            });
 
             builder.Services.AddHostedService<SessionCleanupService>();
 
@@ -55,11 +61,11 @@ namespace GoldenCrown
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
             builder.Services.AddScoped<ExchangeClient>();
-            builder.Services.AddScoped<IExchangeClient, CachedExchangeClient>(sp =>
-            new CachedExchangeClient(
+            builder.Services.AddScoped<IExchangeClient, DistributedCachedExchangeClient>(sp =>
+            new DistributedCachedExchangeClient(
                 sp.GetRequiredService<ExchangeClient>(),
-                sp.GetRequiredService<IMemoryCache>(),
-                sp.GetRequiredService<ILogger<CachedExchangeClient>>()
+                sp.GetRequiredService<IDistributedCache>(),
+                sp.GetRequiredService<ILogger<DistributedCachedExchangeClient>>()
                 ));
 
 
